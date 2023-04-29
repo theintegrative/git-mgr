@@ -1,48 +1,85 @@
-# Git Repo Manager
+# Github README
 
-This is a simple command line tool for managing Git repositories.
+## Introduction
+
+This project provides a command-line tool for managing multiple GitHub repositories. The `grm` tool can create directories, generate repository lists, clone repositories, show repositories, push changes to remote repositories, export configurations to a JSON file, and import configurations from a JSON file. Additionally, the tool provides the option to create an Ansible playbook.
+
+## Requirements
+
+To use this tool, you need to have the following dependencies installed:
+
+- Python 3
+- `typer`
+- `PyGithub`
+- `ansible` (optional)
 
 ## Installation
 
-1. Clone the repository:
-```shell
-git clone https://github.com/theintegrative/git-repo-manager.git
+You can install this tool using pip:
+
 ```
-2. Install the required packages by running `pip install -r requirements.txt`
+pip install git+https://github.com/<username>/<repository>.git
+```
 
 ## Usage
 
-The following commands are available:
+To use the `grm` tool, run the following commands:
 
-- `create`: Creates the required directories for cloning repositories
-- `generate`: Generates repolists for all directories
-- `clone`: Clones all repositories in parallel
-- `show`: Shows all repositories in each repolist
-- `export`: Export directory structure and repolist information as JSON
-- `import_file`: Import directory structure and repolist information from JSON
-- `push`: Pushes changes to git repo manager repository
+- `grm create`: Creates necessary directories.
+- `grm generate`: Generates repo lists based on config files.
+- `grm clone`: Clones repositories.
+- `grm show`: Shows repositories.
+- `grm push`: Pushes changes to remote repositories.
+- `grm export`: Exports configuration to a JSON file.
+- `grm import`: Imports configuration from a JSON file.
+- `grm create_playbook`: Creates an Ansible playbook.
 
-Example usage:
+## Examples
 
-```bash
-# Create directories
-python git_repo_manager.py create
+To create necessary directories:
 
-# Generate repolists
-python git_repo_manager.py generate
+```
+grm create
+```
 
-# Clone repositories
-python git_repo_manager.py clone
+To generate repository lists based on config files:
 
-# Show repositories
-python git_repo_manager.py show
+```
+grm generate
+```
 
-# Export config to file
-python git_repo_manager.py export config.json
+To clone repositories:
 
-# Import config from file
-python git_repo_manager.py import_file config.json
+```
+grm clone
+```
 
-# Push changes
-python git_repo_manager.py push
+To show repositories:
+
+```
+grm show
+```
+
+To push changes to remote repositories:
+
+```
+grm push
+```
+
+To export configuration to a JSON file:
+
+```
+grm export /path/to/config.json
+```
+
+To import configuration from a JSON file:
+
+```
+grm import /path/to/config.json
+```
+
+To create an Ansible playbook:
+
+```
+grm create_playbook
 ```
