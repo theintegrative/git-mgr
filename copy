@@ -1,0 +1,1 @@
+cat grm/manager.py | xclip -sel clip

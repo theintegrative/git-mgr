@@ -30,7 +30,7 @@ def show():
     """
     Show repositories.
     """
-    show_repos()
+    show_repositories()
 
 @app.command()
 def push():
@@ -47,7 +47,7 @@ def export(file_path: str):
     export_config(file_path)
 
 @app.command()
-def import_(file_path: str):
+def import_file(file_path: str):
     """
     Import configuration from a JSON file.
     """

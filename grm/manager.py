@@ -47,17 +47,59 @@ def check_repoconfig_file(func):
         if not os.path.isfile(CONFIG_PATH):
             typer.echo("The repoconfig.json file does not exist. Please run the 'create' command to generate it.")
             return
+        with open(CONFIG_PATH, 'r') as f:
+            repos = json.load(f)
+            if not repos:
+                typer.echo("The repoconfig.json file is empty.")
+                return
+        for directory in repos:
+            for url in repos[directory]:
+                repo_dirname = os.path.basename(url)
+                if not os.path.exists(repo_dirname):
+                    continue
+                repo = git.Repo(repo_dirname)
+                for remote in repo.remotes:
+                    for remote_url in remote.urls:
+                        if remote_url.endswith('.git'):
+                            remote_url = remote_url[:-4]
+                        if url not in remote_url:
+                            typer.echo(f"Repository {url} in {directory} is not listed in the repoconfig file.")
         return func(*args, **kwargs)
     return wrapper
 
-@check_repoconfig_file
-def show_repos():
+def add_missing_repositories():
     with open(CONFIG_PATH, 'r') as f:
         repos = json.load(f)
+    for directory in directories:
+        if not os.path.exists(directory):
+            continue
+        repo = git.Repo(directory)
+        for remote in repo.remotes:
+            for url in remote.urls:
+                if url.endswith('.git'):
+                    url = url[:-4]
+                if url not in repos.get(directory, []):
+                    typer.echo(f"Adding repository {url} in {directory} to the repoconfig file.")
+                    repos.setdefault(directory, []).append(url)
+    with open(CONFIG_PATH, 'w') as f:
+        json.dump(repos, f, indent=4)
+
+@check_repoconfig_file
+def show_repositories():
+    if not os.path.isfile(CONFIG_PATH):
+        typer.echo("The repoconfig.json file does not exist. Please run the 'create' command to generate it.")
+        return
+    with open(CONFIG_PATH, 'r') as f:
+        repos = json.load(f)
+        if not repos:
+            typer.echo("The repoconfig.json file is empty.")
+            add_missing_repositories()
+            typer.echo("Repositories added to repoconfig.json file.")
+            return
         for directory, urls in repos.items():
-            typer.echo(f"Repos in {directory}:")
+            typer.echo(f"\n{directory}:")
             for url in urls:
-                typer.echo(f"- {url}")
+                typer.echo(f" - {url}")
 
 def push_changes():
     repo = git.Repo(os.getcwd())
@@ -91,7 +133,8 @@ def export_config(file_path: str):
 @check_repoconfig_file
 def import_config(file_path: str):
     with open(file_path, 'r') as f:
-        repos = json.load(f)
-    with open(CONFIG_PATH, 'w') as f:
-        json.dump(repos,f,indent=4)
-        typer.echo("Configuration imported successfully.")
+        data = json.load(f)
+        for directory, urls in data.items():
+            for url in urls:
+                clone_repository(directory, url)
+    typer.echo("Repositories imported successfully.")
