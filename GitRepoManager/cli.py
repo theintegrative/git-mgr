@@ -1,6 +1,6 @@
 import typer
 
-from grm.manager import *
+from GitRepoManager.manager import *
 
 app = typer.Typer()
 

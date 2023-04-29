@@ -1,8 +1,6 @@
-# Github README
+# Git Repo Manager
 
-## Introduction
-
-This project provides a command-line tool for managing multiple GitHub repositories. The `grm` tool can create directories, generate repository lists, clone repositories, show repositories, push changes to remote repositories, export configurations to a JSON file, and import configurations from a JSON file. Additionally, the tool provides the option to create an Ansible playbook.
+This is a command-line tool for managing a set of git repositories. It can clone repositories, generate a list of repositories, add missing repositories to the list, show the list of repositories, and push changes to the repositories.
 
 ## Requirements
 
@@ -13,73 +11,28 @@ To use this tool, you need to have the following dependencies installed:
 - `PyGithub`
 - `ansible` (optional)
 
-## Installation
+### Installation
 
-You can install this tool using pip:
-
+First clone this repository:
 ```
-pip install git+https://github.com/<username>/<repository>.git
-```
-
-## Usage
-
-To use the `grm` tool, run the following commands:
-
-- `grm create`: Creates necessary directories.
-- `grm generate`: Generates repo lists based on config files.
-- `grm clone`: Clones repositories.
-- `grm show`: Shows repositories.
-- `grm push`: Pushes changes to remote repositories.
-- `grm export`: Exports configuration to a JSON file.
-- `grm import`: Imports configuration from a JSON file.
-- `grm create_playbook`: Creates an Ansible playbook.
-
-## Examples
-
-To create necessary directories:
-
-```
-grm create
+git clone git clone https://github.com/theintegrative/git-repo-manager.git
 ```
 
-To generate repository lists based on config files:
-
+To install using setup.py, clone the repository and run:
 ```
-grm generate
-```
-
-To clone repositories:
-
-```
-grm clone
+python setup.py install
 ```
 
-To show repositories:
+### Usage
+To use the tool, you first need to create a repoconfig.json file that lists the repositories you want to manage. You can do this using the generate command:
 
-```
-grm show
-```
+- generate: Generate a repoconfig.json file that lists the repositories you want to manage.
 
-To push changes to remote repositories:
+Once you have created the repoconfig.json file, you can use the other commands to manage your repositories.
 
-```
-grm push
-```
-
-To export configuration to a JSON file:
-
-```
-grm export /path/to/config.json
-```
-
-To import configuration from a JSON file:
-
-```
-grm import /path/to/config.json
-```
-
-To create an Ansible playbook:
-
-```
-grm create_playbook
-```
+- clone: Clone all the repositories listed in the repoconfig.json file.
+- show: Show the list of repositories listed in the repoconfig.json file.
+- push: Push changes to all the repositories listed in the repoconfig.json file.
+- export: Export the list of repositories to a file.
+- import: Import a list of repositories from a file.
+- ansible: Create an Ansible playbook to deploy the repositories.
