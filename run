@@ -1,0 +1,163 @@
+#! /usr/bin/env python3
+
+import os
+import re
+import concurrent.futures
+import typer
+import git
+import json
+
+app = typer.Typer()
+
+directories = [f"./git/{org}/{loc}" for org in ["hub", "lab"] for loc in ["int", "ext"]]
+
+def create_dirs():
+    for directory in directories:
+        os.makedirs(directory, exist_ok=True)
+
+
+def generate_repolists():
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        for directory in directories:
+            executor.submit(generate_repolist, directory)
+
+
+def generate_repolist(directory):
+    repos = set()
+    for root, dirs, files in os.walk(directory):
+        for file in files:
+            if file == 'config':
+                path = os.path.join(root, file)
+                with open(path, 'r') as f:
+                    content = f.read()
+                    match = re.search(r'git@[^@]*\.com:[^:]+/[^/]+', content)
+                    if match:
+                        url = match.group(0)
+                        url = re.sub(r'\s+fetch\s*=.*', '', url)
+                        repos.add(url)
+    with open(f"{directory}/repolist", 'w') as f:
+        f.write('\n'.join(repos))
+
+
+def clone_repositories():
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        for directory in directories:
+            with open(f"{directory}/repolist", 'r') as f:
+                for url in f:
+                    url = url.strip()
+                    if url:
+                        executor.submit(clone_repository, directory, url)
+
+
+def clone_repository(directory, url):
+    os.system(f"cd {directory} && git clone --quiet {url}")
+
+
+def show_repos():
+    for directory in directories:
+        typer.echo(f"Repos in {directory}:")
+        with open(f"{directory}/repolist", 'r') as f:
+            for url in f:
+                url = url.strip()
+                if url:
+                    typer.echo(f"- {url}")
+
+def push_changes():
+    repo = git.Repo(os.getcwd())
+    if repo.is_dirty(untracked_files=True):
+        repo.git.add(".")
+        repo.index.commit("Automatic commit")
+        origin = repo.remote(name="origin")
+        origin.push()
+        typer.echo("Changes pushed to remote repository.")
+    else:
+        typer.echo("No changes to push.")
+
+def export_config(file_path: str):
+    data = []
+    for directory in directories:
+        repos = set()
+        for root, dirs, files in os.walk(directory):
+            for file in files:
+                if file == 'config':
+                    path = os.path.join(root, file)
+                    with open(path, 'r') as f:
+                        content = f.read()
+                        match = re.search(r'git@[^@]*\.com:[^:]+/[^/]+', content)
+                        if match:
+                            url = match.group(0)
+                            url = re.sub(r'\s+fetch\s*=.*', '', url)
+                            repos.add(url)
+        data.append({"directory": directory, "repos": list(repos)})
+    
+    with open(file_path, 'w') as f:
+        json.dump(data, f, indent=4)
+
+
+def import_config(file_path: str):
+    with open(file_path, 'r') as f:
+        data = json.load(f)
+        
+    for directory_data in data:
+        directory = directory_data["directory"]
+        os.makedirs(directory, exist_ok=True)
+        with open(f"{directory}/repolist", 'w') as f:
+            f.write('\n'.join(directory_data["repos"]))
+
+@app.command()
+def push():
+    """
+    Pushes changes to git repo manager repository
+    """
+    push_changes()
+
+@app.command()
+def create():
+    """
+    Creates the required directories for cloning repositories
+    """
+    create_dirs()
+
+
+@app.command()
+def generate():
+    """
+    Generates repolists for all directories
+    """
+    generate_repolists()
+
+
+@app.command()
+def clone():
+    """
+    Clones all repositories in parallel
+    """
+    clone_repositories()
+
+
+@app.command()
+def show():
+    """
+    Shows all repositories in each repolist
+    """
+    show_repos()
+
+
+@app.command()
+def export(file_path: str):
+    """
+    Export directory structure and repolist information as JSON.
+    """
+    export_config(file_path)
+
+
+@app.command()
+def import_file(file_path: str):
+    """
+    Import directory structure and repolist information from JSON.
+    """
+    import_config(file_path)
+
+if __name__ == "__main__":
+    app() 
+

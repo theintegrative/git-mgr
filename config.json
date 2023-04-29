@@ -1,0 +1,43 @@
+[
+    {
+        "directory": "./git/hub/int",
+        "repos": [
+            "git@github.com:theintegrative/home-lab-setup.git",
+            "git@github.com:theintegrative/vagrant-project-template.git",
+            "git@github.com:theintegrative/scalable-ansible-project-template.git",
+            "git@github.com:theintegrative/main-driver-setup.git",
+            "git@github.com:theintegrative/content-vault.git",
+            "git@github.com:theintegrative/obsidian-system-content.git",
+            "git@github.com:theintegrative/scalable-ansible-vagrant-gitlab-ci-project-template.git",
+            "git@github.com:theintegrative/obsidian-system.git",
+            "git@github.com:theintegrative/shell-scripts.git",
+            "git@github.com:theintegrative/scalable-ansible-vagrant-project-template.git",
+            "git@github.com:theintegrative/ansible-skeleton-role.git",
+            "git@github.com:theintegrative/git-repo-manager.git",
+            "git@github.com:theintegrative/obsidian.git",
+            "git@github.com:theintegrative/gitlab-server.git"
+        ]
+    },
+    {
+        "directory": "./git/hub/ext",
+        "repos": [
+            "git@github.com:HRex39/rtl8852be_bt.git",
+            "git@github.com:PimLeerkes/Straattaal-vertaler.git",
+            "git@github.com:brain-workshop/brainworkshop.git",
+            "git@github.com:JanCBrammer/OpenHRV.git",
+            "git@github.com:HRex39/rtl8852be.git"
+        ]
+    },
+    {
+        "directory": "./git/lab/int",
+        "repos": [
+            "git@gitlab.com:main-website1/theintegrative-net.git",
+            "git@gitlab.com:tint-project-templates/scalable-ansible-vagrant-gitlab-ci-project-template.git",
+            "git@gitlab.com:main-website1/theintegrative-net-config.git"
+        ]
+    },
+    {
+        "directory": "./git/lab/ext",
+        "repos": []
+    }
+]
