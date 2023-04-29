@@ -53,5 +53,9 @@ def import_file(file_path: str):
     """
     import_config(file_path)
 
+@app.command()
+def create_playbook():
+    create_ansible_playbook()
+
 def main():
     app()

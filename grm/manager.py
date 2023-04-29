@@ -138,3 +138,33 @@ def import_config(file_path: str):
             for url in urls:
                 clone_repository(directory, url)
     typer.echo("Repositories imported successfully.")
+
+def create_ansible_playbook():
+    PLAYBOOK_PATH = 'playbook.yml'
+    with open(CONFIG_PATH, 'r') as f:
+        config = json.load(f)
+
+    repo_dict = {}
+    for directory, repos in config.items():
+        for repo_url in repos:
+            repo_name = repo_url.split('/')[-1].split('.')[0]
+            repo_dict[repo_name] = {
+                'dest': os.path.join(directory, repo_name),
+                'repo': repo_url
+            }
+
+    with open(PLAYBOOK_PATH, 'w') as f:
+        home = "home"
+        f.write('---\n')
+        f.write('- hosts: all\n')
+        f.write('  vars:\n')
+        f.write('    home: ""\n')
+        f.write('  tasks:\n')
+        for repo_name, repo_info in repo_dict.items():
+            f.write(f'  - name: Clone {repo_name}\n')
+            f.write(f'    ansible.builtin.git:\n')
+            f.write(f'      repo: {repo_info["repo"]}\n')
+            f.write(f'      dest: "{{{{{ home }}}}}{repo_info["dest"]}"\n')
+            f.write(f'    ignore_errors: yes\n\n')
+
+    typer.echo(f'Ansiblel playbook file created at {PLAYBOOK_PATH}.')
