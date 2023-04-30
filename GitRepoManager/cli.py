@@ -55,7 +55,28 @@ def import_file(file_path: str):
 
 @app.command()
 def create_playbook():
+    """
+    Create a ansible playbook with all the repositories.
+    """
     create_ansible_playbook()
+
+@app.command()
+def list_repos(path: str):
+    """
+    List all git repositories recursively starting from this path
+    """
+    for repo in list_all_repositories(path):
+        typer.echo(repo)
+        
+@app.command()
+def init():
+    """ 
+    Intitialize directory structure and clone repo confituration
+    """
+    create()
+    show()
+    clone()
+
 
 def main():
     app()
