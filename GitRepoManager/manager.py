@@ -144,12 +144,13 @@ def list_all_repositories(directory_path):
         for file in files:
             if file == 'config':
                 path = os.path.join(root, file)
-                content = read_file_contents(path)
-                match = re.search(r'git@[^@]*\.com:[^:]+/[^/]+', content)
-                if match:
-                    url = match.group(0)
-                    url = re.sub(r'\s+fetch\s*=.*', '', url)
-                    repositories.append(url)
+                with open(path, 'r') as f:
+                    content = f.read()
+                    match = re.search(r'git@[^@]*\.com:[^:]+/[^/]+', content)
+                    if match:
+                        url = match.group(0)
+                        url = re.sub(r'\s+fetch\s*=.*', '', url)
+                        repositories.append(url)
     return repositories
 
 def create_ansible_playbook():
