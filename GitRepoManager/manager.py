@@ -5,13 +5,12 @@ import typer
 import git
 import concurrent.futures
 
-
 CONFIG_PATH = "./git/repoconfig.json"
 directories = [f"./git/{org}/{loc}" for org in ["hub", "lab"] for loc in ["int", "ext"]]
 
 def read_file_contents(file_path):
     with open(file_path, 'r') as f:
-        return f.read()
+        return json.load(f)
 
 def write_data_to_file(file_path, data):
     with open(file_path, 'w') as f:
@@ -29,12 +28,13 @@ def generate_repolists():
             for file in files:
                 if file == 'config':
                     path = os.path.join(root, file)
-                    content = read_file_contents(path)
-                    match = re.search(r'git@[^@]*\.com:[^:]+/[^/]+', content)
-                    if match:
-                        url = match.group(0)
-                        url = re.sub(r'\s+fetch\s*=.*', '', url)
-                        repos[directory].append(url)
+                    with open(path, 'r') as f:
+                        content = f.read()
+                        match = re.search(r'git@[^@]*\.com:[^:]+/[^/]+', content)
+                        if match:
+                            url = match.group(0)
+                            url = re.sub(r'\s+fetch\s*=.*', '', url)
+                            repos[directory].append(url)
     write_data_to_file(CONFIG_PATH, repos)
 
 def clone_repositories():
@@ -121,12 +121,13 @@ def export_config(file_path: str):
             for file in files:
                 if file == 'config':
                     path = os.path.join(root, file)
-                    content = read_file_contents(path)
-                    match = re.search(r'git@[^@]*\.com:[^:]+/[^/]+', content)
-                    if match:
-                        url = match.group(0)
-                        url = re.sub(r'\s+fetch\s*=.*', '', url)
-                        data[directory].append(url)
+                    with open(path, 'r') as f:
+                        content = f.read()
+                        match = re.search(r'git@[^@]*\.com:[^:]+/[^/]+', content)
+                        if match:
+                            url = match.group(0)
+                            url = re.sub(r'\s+fetch\s*=.*', '', url)
+                            data[directory].append(url)
     write_data_to_file(file_path, data)
 
 @check_repoconfig_file
@@ -162,7 +163,6 @@ def create_ansible_playbook():
                 'dest': os.path.join(directory, repo_name),
                 'repo': repo_url
             }
-
     with open(PLAYBOOK_PATH, 'w') as f:
         home = "home"
         f.write('---\n')
@@ -176,5 +176,4 @@ def create_ansible_playbook():
             f.write(f'      repo: {repo_info["repo"]}\n')
             f.write(f'      dest: "{{{{{ home }}}}}{repo_info["dest"]}"\n')
             f.write(f'    ignore_errors: yes\n\n')
-
     typer.echo(f'Ansiblel playbook file created at {PLAYBOOK_PATH}.')

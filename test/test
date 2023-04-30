@@ -1,0 +1,5 @@
+#!/bin/bash
+
+git clone https://github.com/theintegrative/git-repo-manager.git
+cd git-repo-manager/
+git-repo-manager init
