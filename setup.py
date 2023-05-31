@@ -1,12 +1,12 @@
 from setuptools import setup
 
 setup(
-    name='git-repo-manager',
+    name='git-mgr',
     version='0.1',
-    packages=['GitRepoManager'],
+    packages=['GitMgr'],
     entry_points={
         'console_scripts': [
-            'git-repo-manager=GitRepoManager.cli:main'
+            'git-mgr=GitMgr.cli:main'
         ]
     },
     install_requires=[
