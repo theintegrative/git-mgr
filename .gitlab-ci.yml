@@ -1,0 +1,24 @@
+stages:
+  - build
+  - test
+
+images: python:latest
+
+build:git-mgr:
+  stage: build
+  script:
+    - pip install -e .
+    - git-mgr --install-completion bash
+
+
+test:git-mgr:
+  stage: test
+  script:
+    - git-mgr init
+    - git-mgr repos clone
+    - git-mgr repos show all
+    - git-mgr repos show config
+    - git-mgr repos show plaforms
+    - git-mgr repos show settings
+    - git-mgr repos show subrepos
+    - git-mgr repos update all
