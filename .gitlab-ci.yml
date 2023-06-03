@@ -4,13 +4,10 @@ stages:
 
 image: python:latest
 
-build:git-mgr:
-  stage: build
-  script:
-    - pip install -e .
-
 test:git-mgr:
   stage: test
+  before_script:
+    - pip install -e .
   script:
     - git-mgr init
     - git-mgr repos clone
