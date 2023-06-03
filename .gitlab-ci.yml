@@ -8,8 +8,6 @@ build:git-mgr:
   stage: build
   script:
     - pip install -e .
-    - git-mgr --install-completion bash
-
 
 test:git-mgr:
   stage: test
