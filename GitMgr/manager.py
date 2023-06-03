@@ -25,11 +25,11 @@ def platform_json(alias="", sub_repos=[]):
     return {"alias": alias, "subrepos": sub_repos}
 
 ## FILE and DIRECTORY
-def read_file_contents(path):
+def read_file(path):
     with open(path, 'r') as f:
         return json.load(f)
 
-def write_data_to_file(path, data):
+def write_file(path, data):
     with open(path, 'w') as f:
         json.dump(data, f, indent=4)
 
@@ -50,7 +50,7 @@ def create_git_mgr_paths():
 
 def create_platform_paths(config):
     # Note: Check if platforms not empty
-    for platform in get_platform_names(config):
+    for platform in config["platforms"].keys():
         extend_path(REPOS_PATH, platform)
 
 def create_repository_path(link):
@@ -68,7 +68,8 @@ def create_config():
 def update_repoconfig(config, directory=SEARCH_PATH):
     # give feedback if updated or not
     unique_links = get_unique_links(get_repository_links(directory), config["repos"])
-    return set_repos(config, unique_links)
+    config["repos"] = repos
+    return config
 
 ## TEXT MANIPULATION
 def rstrip_ssh(link):
@@ -90,36 +91,24 @@ def split_repository_directory(link):
     directory = parts[:-1]
     return repository, directory
 
-def get_platform_path(link):
-    return os.path.join(REPOS_PATH, get_alias(strip_platform(link)))
-
 ## SETTINGS CONFIGURATION
 def get_settings():
-    return read_file_contents(SETTINGS_FILE)
+    return read_file(SETTINGS_FILE)
 
 ## CONFIG CONFIGURATION
 def get_config():
-    return read_file_contents(CONFIG_FILE)
- 
-def set_repos(config, repos):
-    config["repos"] = repos
-    return config
+    return read_file(CONFIG_FILE)
+
+def get_platform_path(link, config=get_config()):
+    return os.path.join(REPOS_PATH, config["platforms"][strip_platform(link)]["alias"])
 
 def get_platforms_repos(config):
     return list(set([strip_platform(link) for link in config["repos"]]))
 
-def get_platform_names(config):
-    return config["platforms"].keys()
-
-def set_platform(config, platform):
-    # Check if platform already exist
-    config["platforms"][platform] = platform_json()
-    return config
-
 def set_platforms_repos(config):
     for platform in get_platforms_repos(config):
-        new_config = set_platform(config, platform)
-    return new_config
+        config["platforms"][platform] = platform_json()
+    return config
 
 def append_subrepos(config):
     for link in config["repos"]:
@@ -129,25 +118,11 @@ def append_subrepos(config):
         config["platforms"][platform]["subrepos"] = sorted(subrepos)
     return config
 
-def get_alias(platform, config=get_config()):
-    return config["platforms"][platform]["alias"]
-
-def set_alias(config, platform, alias):
-    config["platforms"][platform]["alias"] = alias 
-    return config
-
 def set_aliases(config):
-    new_config = config
     for platform in config["platforms"]:
         alias = prompt(f'Set alias for {platform}: ')
         config["platforms"][platform]["alias"] = alias 
-    return new_config
-
-def get_subrepos(config, platform):
-    return config["platforms"][platform]["subrepos"]
-
-def get_repos(config):
-    return config["repos"]
+    return config
 
 def clone_repo(link):
     repository_path, repository = create_repository_path(link)
@@ -155,7 +130,7 @@ def clone_repo(link):
     return repository
 
 def clone_repos(config):
-    for link in get_repos(config):
+    for link in config["repos"]:
         print(f"Cloned repository: {clone_repo(link)}")
 
 def get_repository_links(path=SEARCH_PATH):

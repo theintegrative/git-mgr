@@ -1,5 +1,5 @@
 {
-    "./git/hub/int": [
+    "./git//int": [
         "git@github.com:theintegrative/git-repo-manager.git",
         "git@github.com:theintegrative/obsidian-system-content.git",
         "git@github.com:theintegrative/home-lab-setup.git",
