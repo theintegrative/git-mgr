@@ -2,7 +2,7 @@ stages:
   - build
   - test
 
-images: python:latest
+image: python:latest
 
 build:git-mgr:
   stage: build
